@@ -1,16 +1,21 @@
-const searchSongs=()=>{
+const searchSongs=async()=>{
     const searchText=document.getElementById("search-field").value;
     //console.log(searchText);
     const url=`https://api.lyrics.ovh/suggest/${searchText}`;
     //console.log(url);
     //load data
+    // const res= await fetch(url);
+    // const data= await res.json();
+    // displaySongs(data.data);
     fetch(url)
     .then(res=>res.json())
     .then(data=>displaySongs(data.data))
+    .catch(error=>displayError('Something went song. Please, try again later.'))
 }
 
 const displaySongs=(songs)=>{
     const songContainer=document.getElementById("song-container");
+    songContainer.innerHTML="";
     songs.forEach(song => {
         console.log(song);
         const songDiv=document.createElement("div");
@@ -33,6 +38,28 @@ const displaySongs=(songs)=>{
     });
 }
 
-const getLyric=(artist,title)=>{
-    console.log(artist,title);
+const getLyric=async(artist,title)=>{
+    //console.log(artist,title);
+    const url=`https://api.lyrics.ovh/v1/${artist}/${title}`;
+    //console.log(url);
+
+    try{
+        const res= await fetch(url);
+        const data= await res.json();
+        displayLyrics(data.lyrics);
+    }catch(error){
+        displayError('Sorry! I failed to load lyrics, please try again later');
+    }
+
+
+}
+
+const displayLyrics=lyrics=>{
+    const lyricsDiv=document.getElementById("song-lyrics");
+    lyricsDiv.innerText=lyrics;
+}
+
+const displayError=error=>{
+    const errorTag=document.getElementById("error-message");
+    errorTag.innerText=error;
 }
